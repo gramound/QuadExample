@@ -3,10 +3,10 @@ package com.example.quadexample
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.upstream.DefaultAllocator
@@ -16,6 +16,7 @@ class MainActivity : Activity() {
     private var allocator: DefaultAllocator? = null
     private val players = ArrayList<Player>()
     private val playerViews = ArrayList<PlayerView>()
+    private lateinit var handler: Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +25,7 @@ class MainActivity : Activity() {
         playerViews.add(findViewById(R.id.playerView2))
         playerViews.add(findViewById(R.id.playerView3))
         playerViews.add(findViewById(R.id.playerView4))
+        handler = Handler(mainLooper)
     }
 
     override fun onNewIntent(intent: Intent?) {
@@ -80,11 +82,17 @@ class MainActivity : Activity() {
                 players.add(player)
             }
         }
+        var delay = 0L
         players.forEach {
-            it.setMediaItem(MediaItem.Builder()
-                .setUri("https://storage.googleapis.com/exoplayer-test-media-1/60fps/bbb-clear-1080/video.mp4")
-                .build())
-            it.prepare()
+            handler.postDelayed({
+                it.setMediaItem(
+                    MediaItem.Builder()
+                        .setUri("https://storage.googleapis.com/exoplayer-test-media-1/60fps/bbb-clear-1080/video.mp4")
+                        .build()
+                )
+                it.prepare()
+            }, delay)
+            delay += 1000L
         }
         return true
     }
